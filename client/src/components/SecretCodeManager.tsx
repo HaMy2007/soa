@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import MainHeadingTitle from "./MainHeadingTitle";
 
 const SecretCodeManager = () => {
   const [secretCode, setSecretCode] = useState("");
@@ -16,9 +17,12 @@ const SecretCodeManager = () => {
 
   const fetchSecretCode = async () => {
     try {
-      const res = await fetch("http://localhost:3003/api/shifts/generate-secret-code", {
-        method: "POST",
-      });
+      const res = await fetch(
+        "http://localhost:3003/api/shifts/generate-secret-code",
+        {
+          method: "POST",
+        }
+      );
 
       if (!res.ok) throw new Error("Không thể tạo mã bí mật");
 
@@ -45,12 +49,15 @@ const SecretCodeManager = () => {
     }
   };
 
-
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">Secret Code Management</h1>
+    <div className="p-8 flex flex-col items-center justify-center">
+      {/* <h1 className="text-3xl font-bold mb-8">Secret Code Management</h1> */}
+      <MainHeadingTitle
+        title="Secret Code Management"
+        className="m-10"
+      ></MainHeadingTitle>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="w-3/5">
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Staff Code</h2>
           <div className="mb-4">
@@ -63,7 +70,7 @@ const SecretCodeManager = () => {
           </div>
           <button
             onClick={fetchSecretCode}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 cursor-pointer"
           >
             Generate New Code
           </button>

@@ -221,13 +221,16 @@ function OrderInMenuPage() {
         cartItems.length !== 0 ? "col-span-3" : "col-span-0"
       }  bg-menu  sticky h-full top-0 p-4 pr-7`}
     >
+      {role !== "manager" && (
       <div className="text-center mb-3">
         <span className="text-red-600 font-bold text-3xl ">Order</span>
         <div className="text-sm text-gray-500 mt-1">
           {currentRole === "staff" ? "Server" : "Customer"}
         </div>
       </div>
+      )}
 
+      {role !== "manager" && (
       <div className="mb-3">
         {!isRoleSwitch ? (
           <button
@@ -264,6 +267,7 @@ function OrderInMenuPage() {
           </div>
         )}
       </div>
+      )}
       {currentRole === "staff" ? (
         <div className="mb-4">
           <label className="block mb-1 text-sm font-medium text-gray-700">Select a table</label>

@@ -38,15 +38,8 @@ function App() {
                 <Route path="orders/:id" element={<OrderDetail />} />
                 <Route path="orders/edit-order/:id" element={<EditOrder />} />
                 <Route path="reviews" element={<Reviews />} />
+                <Route path="secret-codes" element={<SecretCodeManager />} />
               </Route>
-              <Route
-                path="/manager/dashboard/secret-codes"
-                element={
-                  <PrivateRoute>
-                    <SecretCodeManager />
-                  </PrivateRoute>
-                }
-              />
             </Routes>
           </StaffCustomerProvider>
         </CartProvider>

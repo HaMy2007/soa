@@ -26,6 +26,27 @@ const Sidebar = () => {
       </div>
 
       <div className="flex flex-col space-y-2 pt-4">
+        {role === "manager" && (
+          <>
+            <Link
+              to={`/${role}/dashboard/reviews`}
+              className="flex items-center p-2 rounded-lg hover:bg-orange-200"
+            >
+              <StarIcon className="h-6 w-6 text-orange-600" />
+              <span className="ml-2">Reviews</span>
+            </Link>
+            <Link
+              to={`/${role}/dashboard/secret-codes`}
+              className="flex items-center p-2 rounded-lg hover:bg-orange-200"
+            >
+              <KeyIcon className="h-6 w-6 text-orange-600" />
+              <span className="ml-2">Secret Codes</span>
+            </Link>
+
+            {/* <Button onClick={() => {}}>Generate secret code</Button> */}
+          </>
+        )}
+
         {/* =======common======= */}
         <Link
           to={`/${role}/dashboard`}
@@ -70,26 +91,6 @@ const Sidebar = () => {
         )}
 
         {role === "chef" && <></>}
-        {role === "manager" && (
-          <>
-            <Link
-              to={`/${role}/dashboard/reviews`}
-              className="flex items-center p-2 rounded-lg hover:bg-orange-200"
-            >
-              <StarIcon className="h-6 w-6 text-orange-600" />
-              <span className="ml-2">Reviews</span>
-            </Link>
-            <Link
-              to={`/${role}/dashboard/secret-codes`}
-              className="flex items-center p-2 rounded-lg hover:bg-orange-200"
-            >
-              <KeyIcon className="h-6 w-6 text-orange-600" />
-              <span className="ml-2">Secret Codes</span>
-            </Link>
-
-            {/* <Button onClick={() => {}}>Generate secret code</Button> */}
-          </>
-        )}
       </div>
     </div>
   );
