@@ -283,18 +283,25 @@ const Orders = () => {
                   <p className="text-sm text-gray-600">Status: {item.status}</p>
                 </div>
 
-                {canManageOrders && (
+                
                   <div className="flex flex-col gap-3 w-full items-end">
+                    {item.status === "confirmed" && (
                     <div className="flex gap-2">
-                      {item.status === "confirmed" && (
+                      {isCustomerView ? (
+                        <button
+                          className="rounded text-white bg-blue-600 hover:bg-blue-700 p-2 transition duration-200"
+                          onClick={(e) => handleEdit(item.id, e)}
+                        >
+                          <MdModeEditOutline />
+                        </button>
+                      ) : (
                         <>
                           <button
                             className="rounded text-white bg-red-600 hover:bg-red-700 p-2 transition duration-200"
                             onClick={async (e) => {
                               e.stopPropagation();
                               const result = await Swal.fire({
-                                title:
-                                  "Bạn có chắc muốn xóa hoá đơn này không?",
+                                title: "Bạn có chắc muốn xóa hoá đơn này không?",
                                 text: "Hành động này không thể hoàn tác!",
                                 icon: "warning",
                                 showCancelButton: true,
@@ -316,6 +323,7 @@ const Orders = () => {
                           >
                             <MdDeleteForever />
                           </button>
+
                           <button
                             className="rounded text-white bg-blue-600 hover:bg-blue-700 p-2 transition duration-200"
                             onClick={(e) => handleEdit(item.id, e)}
@@ -325,6 +333,9 @@ const Orders = () => {
                         </>
                       )}
                     </div>
+                  )}
+
+                  {canManageOrders && (
 
                     <select
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/5 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -338,7 +349,7 @@ const Orders = () => {
                       <option value="processing">Processing</option>
                       <option value="completed">Completed</option>
                     </select>
-
+                  )}
                     {role === "manager" && item.status !== "completed" && (
                       <Button
                         className="text-sm px-3 py-2 font-thin"
@@ -351,7 +362,6 @@ const Orders = () => {
                       </Button>
                     )}
                   </div>
-                )}
               </div>
             ))}
           </div>
