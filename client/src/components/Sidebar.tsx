@@ -2,12 +2,14 @@ import {
   BackwardIcon,
   ShoppingCartIcon,
   StarIcon,
+  KeyIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 
 import { useParams } from "react-router";
 import logo from "../assets/logo.png";
 import { useStaffCustomer } from "../context/StaffCustomerContext";
+import Button from "./Button";
 
 const Sidebar = () => {
   const { role } = useParams();
@@ -78,6 +80,14 @@ const Sidebar = () => {
               <StarIcon className="h-6 w-6 text-orange-600" />
               <span className="ml-2">Reviews</span>
             </Link>
+            <Link
+              to={`/${role}/dashboard/secret-codes`}
+              className="flex items-center p-2 rounded-lg hover:bg-orange-200"
+            >
+              <KeyIcon className="h-6 w-6 text-orange-600" />
+              <span className="ml-2">Secret Codes</span>
+            </Link>
+            {/* <Button onClick={() => {}}>Generate secret code</Button> */}
           </>
         )}
       </div>

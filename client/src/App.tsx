@@ -10,6 +10,7 @@ import Menu from "./pages/Menu";
 import Orders from "./pages/Orders";
 import Reviews from "./pages/Reviews";
 import RoleSelectionScreen from "./pages/RoleSelectionScreen";
+import SecretCodeManager from "./components/SecretCodeManager";
 
 function App() {
   return (
@@ -26,6 +27,10 @@ function App() {
                 <Route path="orders/edit-order/:id" element={<EditOrder />} />
                 <Route path="reviews" element={<Reviews />} />
               </Route>
+              <Route
+                path="/manager/dashboard/secret-codes"
+                element={<SecretCodeManager />}
+              />
             </Routes>
           </StaffCustomerProvider>
         </CartProvider>
