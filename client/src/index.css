@@ -13,6 +13,7 @@
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
   --color-section-hero: #fdf2e9;
+  --color-section-login-signup: 3ff7364;
   /* ... */
 }
 
@@ -23,6 +24,10 @@
 
   .text-order-fee-title {
     color: #fcafa7;
+  }
+
+  .text-login {
+    color: #ff7364;
   }
 
   .bg-title-section-menu {

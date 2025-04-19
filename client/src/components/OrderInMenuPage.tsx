@@ -224,9 +224,7 @@ function OrderInMenuPage() {
       setIsRoleSwitch(false);
       Swal.fire(
         "Đã chuyển vai trò",
-        `Bạn đang ở vai trò ${
-          newRole === "staff" ? "nhân viên phục vụ" : "khách hàng"
-        }`,
+        `Bạn đang ở vai trò ${newRole === "staff" ? "Server" : "Customer"}`,
         "success"
       );
     } else {
@@ -248,7 +246,7 @@ function OrderInMenuPage() {
         <span className="text-red-600 font-bold text-3xl ">Order</span>
         {/* Hiển thị vai trò hiện tại */}
         <div className="text-sm text-gray-500 mt-1">
-          {currentRole === "staff" ? "Nhân viên phục vụ" : "Khách hàng"}
+          {currentRole === "staff" ? "Server" : "Customer"}
         </div>
       </div>
 
@@ -260,8 +258,8 @@ function OrderInMenuPage() {
             onClick={() => setIsRoleSwitch(true)}
           >
             {currentRole === "staff"
-              ? "Chuyển sang vai trò khách hàng"
-              : "Chuyển sang vai trò nhân viên"}
+              ? "Concert to customer"
+              : "Convert to server"}
           </button>
         ) : (
           <div className="bg-white border p-3 rounded shadow mb-3">

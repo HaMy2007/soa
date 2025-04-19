@@ -2,15 +2,18 @@ import { Suspense } from "react";
 import { Route, Routes } from "react-router";
 import EditOrder from "./components/EditOrder";
 import OrderDetail from "./components/OrderDetail";
+import PrivateRoute from "./components/PrivateRole";
+import SecretCodeManager from "./components/SecretCodeManager";
 import { CartProvider } from "./context/CartContext";
 import { RoleProvider } from "./context/RoleContext";
 import { StaffCustomerProvider } from "./context/StaffCustomerContext";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 import Menu from "./pages/Menu";
 import Orders from "./pages/Orders";
+import Register from "./pages/Register";
 import Reviews from "./pages/Reviews";
 import RoleSelectionScreen from "./pages/RoleSelectionScreen";
-import SecretCodeManager from "./components/SecretCodeManager";
 
 function App() {
   return (
@@ -19,8 +22,17 @@ function App() {
         <CartProvider>
           <StaffCustomerProvider>
             <Routes>
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/" element={<RoleSelectionScreen />} />
-              <Route path=":role/dashboard/*" element={<Dashboard />}>
+              <Route
+                path=":role/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              >
                 <Route index element={<Menu />} />
                 <Route path="orders" element={<Orders />} />
                 <Route path="orders/:id" element={<OrderDetail />} />
@@ -29,7 +41,11 @@ function App() {
               </Route>
               <Route
                 path="/manager/dashboard/secret-codes"
-                element={<SecretCodeManager />}
+                element={
+                  <PrivateRoute>
+                    <SecretCodeManager />
+                  </PrivateRoute>
+                }
               />
             </Routes>
           </StaffCustomerProvider>

@@ -17,11 +17,15 @@ const RoleSelectionScreen = (props: Props) => {
 
   const handleRoleSelect = (role: string) => {
     setRole(role);
-    navigate(`/${role}/dashboard`);
+    if (role === "manager") {
+      navigate("/login");
+    } else {
+      navigate(`/${role}/dashboard`);
+    }
   };
 
   return (
-    <div className="font-display  bg-section-hero">
+    <div className="font-display bg-section-hero">
       <div className="py-14 h-screen max-w-7xl mx-auto">
         <div className="flex gap-12">
           <div className="flex flex-1 flex-col gap-12 text-start">
@@ -73,22 +77,22 @@ const RoleSelectionScreen = (props: Props) => {
                   alt="Customer photo"
                 />
                 <img
-                  className="h-11 w-11 -mr-3 border-amber-50 border-2  rounded-full object-cover"
+                  className="h-11 w-11 -mr-3 border-amber-50 border-2 rounded-full object-cover"
                   src={customer3}
                   alt="Customer photo"
                 />
                 <img
-                  className="h-11 w-11 -mr-3 border-amber-50 border-2  rounded-full object-cover"
+                  className="h-11 w-11 -mr-3 border-amber-50 border-2 rounded-full object-cover"
                   src={customer4}
                   alt="Customer photo"
                 />
                 <img
-                  className="h-11 w-11 -mr-3 border-amber-50 border-2  rounded-full object-cover"
+                  className="h-11 w-11 -mr-3 border-amber-50 border-2 rounded-full object-cover"
                   src={customer5}
                   alt="Customer photo"
                 />
                 <img
-                  className="h-11 w-11 -mr-3 border-amber-50 border-2  rounded-full object-cover m-0"
+                  className="h-11 w-11 -mr-3 border-amber-50 border-2 rounded-full object-cover m-0"
                   src={customer6}
                   alt="Customer photo"
                 />
