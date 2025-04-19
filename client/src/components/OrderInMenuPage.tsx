@@ -20,11 +20,7 @@ function OrderInMenuPage() {
     note,
   } = useCart();
 
-  const {
-    currentRole,
-    setIsTableOpened,
-    setCurrentRole,
-  } = useStaffCustomer();
+  const { currentRole, setIsTableOpened, setCurrentRole } = useStaffCustomer();
 
   const { role } = useParams();
   const [freeTables, setFreeTables] = useState<
@@ -151,8 +147,8 @@ function OrderInMenuPage() {
         if (!updateRes.ok) throw new Error("Cập nhật order thất bại");
         console.log("Đã thêm món vào order cũ");
         placeOrder(existingOrder.orderID, tableID);
-        navigate(`/${role}/dashboard/orders/${existingOrder.orderID}`,{
-          state: { refresh: true }
+        navigate(`/${role}/dashboard/orders/${existingOrder.orderID}`, {
+          state: { refresh: true },
         });
       } else {
         const orderData = {
@@ -186,7 +182,7 @@ function OrderInMenuPage() {
       const res = await fetch("http://localhost:3003/api/shifts/now");
       const data = await res.json();
       const currentSecret = data.secretCode;
-  
+
       if (roleSecret === currentSecret) {
         const newRole = currentRole === "staff" ? "customer" : "staff";
         setCurrentRole(newRole);
@@ -213,7 +209,7 @@ function OrderInMenuPage() {
       console.error("Lỗi khi kiểm tra secret code theo ca:", err);
       Swal.fire("Lỗi", "Không thể xác minh mã hiện tại", "error");
     }
-  };  
+  };
 
   return (
     <div
@@ -221,52 +217,61 @@ function OrderInMenuPage() {
         cartItems.length !== 0 ? "col-span-3" : "col-span-0"
       }  bg-menu  sticky h-full top-0 p-4 pr-7`}
     >
-      <div className="text-center mb-3">
-        <span className="text-red-600 font-bold text-3xl ">Order</span>
-        <div className="text-sm text-gray-500 mt-1">
-          {currentRole === "staff" ? "Server" : "Customer"}
-        </div>
-      </div>
-
-      <div className="mb-3">
-        {!isRoleSwitch ? (
-          <button
-            className="text-sm px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded w-full"
-            onClick={() => setIsRoleSwitch(true)}
-          >
-            {currentRole === "staff"
-              ? "Concert to customer"
-              : "Convert to server"}
-          </button>
-        ) : (
-          <div className="bg-white border p-3 rounded shadow mb-3">
-            <div className="text-sm mb-2">Nhập mã để chuyển vai trò:</div>
-            <input
-              type="password"
-              value={roleSecret}
-              onChange={(e) => setRoleSecret(e.target.value)}
-              className="p-1 border rounded w-full mb-2"
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={() => setIsRoleSwitch(false)}
-                className="px-3 py-1 bg-gray-400 text-white rounded"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleRoleSwitch}
-                className="px-3 py-1 bg-blue-600 text-white rounded"
-              >
-                Xác nhận
-              </button>
-            </div>
+      {role !== "manager" && (
+        <div className="text-center mb-3">
+          <span className="text-red-600 font-bold text-3xl ">Order</span>
+          <div className="text-sm text-gray-500 mt-1">
+            {currentRole === "staff" ? "Server" : "Customer"}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {role !== "manager" && (
+        <div className="mb-3">
+          {!isRoleSwitch ? (
+            <button
+              className="text-sm px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded w-full"
+              onClick={() => setIsRoleSwitch(true)}
+            >
+              {currentRole === "staff"
+                ? "Convert to customer"
+                : "Convert to server"}
+            </button>
+          ) : (
+            <div className="bg-white border p-3 rounded shadow mb-3">
+              <div className="text-sm mb-2">
+                Enter secret code to change role:
+              </div>
+              <input
+                type="password"
+                value={roleSecret}
+                onChange={(e) => setRoleSecret(e.target.value)}
+                className="p-1 border rounded w-full mb-2"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsRoleSwitch(false)}
+                  className="px-3 py-1 bg-gray-400 text-white rounded"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleRoleSwitch}
+                  className="px-3 py-1 bg-blue-600 text-white rounded"
+                >
+                  Xác nhận
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {currentRole === "staff" ? (
         <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Select a table</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Select a table
+          </label>
           <Select
             options={tableOptions}
             value={tableOptions.find((opt) => opt.value === selectedTable)}
@@ -282,7 +287,7 @@ function OrderInMenuPage() {
           </div>
         </div>
       )}
-      
+
       <div>
         {cartItems.length === 0 ? (
           <div className="text-center mb-3">
@@ -300,14 +305,13 @@ function OrderInMenuPage() {
         </div>
       )}
 
-      
-        <div>
-          <input
-            className="mt-3 mb-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Note"
-            onChange={(e) => setNote(e.target.value)}
-          />
-        </div>
+      <div>
+        <input
+          className="mt-3 mb-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          placeholder="Note"
+          onChange={(e) => setNote(e.target.value)}
+        />
+      </div>
 
       <div className="flex items-center justify-center">
         <button
