@@ -55,7 +55,7 @@ exports.login = async (req, res) => {
       const token = jwt.sign(
         { userId: user._id, username: user.username, role: user.role },
         'your_jwt_secret_key', // => hãy để vào biến môi trường .env nếu cần
-        { expiresIn: '1d' }
+        { expiresIn: '1h' }
       );
   
       res.status(200).json({

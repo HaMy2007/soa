@@ -38,7 +38,8 @@ const Reviews: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [defaultRevenueData, setDefaultRevenueData] = useState<IRevenueResponse | null>(null);
   const [expandedOrderIds, setExpandedOrderIds] = useState<string[]>([]);
-
+  const token = localStorage.getItem("token");
+  
   useEffect(() => {
     fetchRevenueData({}, true); 
   }, []);
@@ -47,7 +48,10 @@ const Reviews: React.FC = () => {
     setLoading(true);
     setErrorRevenue("");
     try {
-      const res = await axios.get<IRevenueResponse>("http://localhost:3001/api/revenue", { params: filters });
+      const res = await axios.get<IRevenueResponse>("http://localhost:3001/api/revenue", { params: filters, headers: {
+        Authorization: `Bearer ${token}`,
+      }, },
+      );
       if(isDefault){
         setDefaultRevenueData(res.data);
       }else{

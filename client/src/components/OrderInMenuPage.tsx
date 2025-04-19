@@ -235,7 +235,7 @@ function OrderInMenuPage() {
             onClick={() => setIsRoleSwitch(true)}
           >
             {currentRole === "staff"
-              ? "Concert to customer"
+              ? "Convert to customer"
               : "Convert to server"}
           </button>
         ) : (
