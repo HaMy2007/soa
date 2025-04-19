@@ -1,11 +1,11 @@
 // trang menu, khong tinh phan sidebar vi da duoc goi trong dashboard
 
-import MenuSection from "../components/MenuSection";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import MainHeadingTitle from "../components/MainHeadingTitle";
+import MenuSection from "../components/MenuSection";
 import OrderInMenuPage from "../components/OrderInMenuPage";
 import { useCart } from "../context/CartContext";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 type Meal = {
   _id: string;
@@ -36,15 +36,18 @@ const Menu = () => {
 
   useEffect(() => {
     if (role === "manager") {
-      clearCart(); 
+      clearCart();
     }
   }, [role]);
-  
+
   const handleLockToggle = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:1234/menu/api/meals/${id}/lock`, {
-        method: "PUT",
-      });
+      const res = await fetch(
+        `http://localhost:1234/menu/api/meals/${id}/lock`,
+        {
+          method: "PUT",
+        }
+      );
 
       const data = await res.json();
       console.log("Lock updated:", data);
@@ -74,7 +77,7 @@ const Menu = () => {
         />
 
         <div>
-        {categories.map((category) => (
+          {categories.map((category) => (
             <MenuSection
               key={category}
               title={category}
@@ -89,8 +92,7 @@ const Menu = () => {
                   isLocked: meal.isLocked,
                   quantity: 1,
                   status: "confirmed",
-                }))
-              }
+                }))}
               handleLockToggle={handleLockToggle}
             />
           ))}
@@ -98,11 +100,11 @@ const Menu = () => {
       </div>
 
       {role !== "chef" && (
-    <div className="col-span-3">
-      <OrderInMenuPage />
+        <div className="col-span-3">
+          <OrderInMenuPage />
+        </div>
+      )}
     </div>
-  )}
-      </div>
   );
 };
 

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
 import { MenuItemType, OrderType } from "../type";
-import { menuItemData } from "../data/MenuData";
 
 type CartContextType = {
   cartItems: MenuItemType[];
@@ -45,7 +44,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const placeOrder = (orderId: string, tableID: string) => {
     const newOrder: OrderType = {
-      id: orderId,                   // orderID từ server trả về
+      id: orderId, // orderID từ server trả về
       items: cartItems,
       totalPrice: totalPrice,
       tableNumber: selectedTable,
@@ -54,24 +53,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       note: note,
       orderStatus: "confirmed",
     };
-  
+
     setOrders([...orders, newOrder]);
     setCartItems([]);
   };
-  
+
   const clearCart = () => {
     setCartItems([]);
     setSelectedTable("");
     setNote("");
   };
-  
 
   const addToCart = (item: MenuItemType) => {
     if (!item._id) {
       console.error("❌ Món ăn không có _id hợp lệ:", item);
       return;
     }
-  
+
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i._id === item._id);
       console.log("id meal: ", item._id);
@@ -83,7 +81,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       return [...prevItems, { ...item, quantity: 1 }];
     });
   };
-  
 
   const removeFromCart = (id: string) => {
     setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
@@ -98,17 +95,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     );
   };
 
-
   const removeOrderFromListOrder = async (id: string) => {
     try {
       const res = await fetch(`http://localhost:3001/api/orders/${id}`, {
         method: "DELETE",
       });
-  
+
       if (!res.ok) {
         throw new Error("Xóa order thất bại");
       }
-  
+
       setOrders((prevItems) => prevItems.filter((item) => item.id !== id));
       console.log("✅ Đã xóa order thành công");
     } catch (error) {
@@ -116,11 +112,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       alert("Không thể xóa đơn hàng. Vui lòng thử lại.");
     }
   };
-  
 
   const updateMenuItem = (id: string, updates: Partial<MenuItemType>) => {
     setCartItems((prevItems) =>
-      prevItems.map((item) => (item._id === id ? { ...item, ...updates } : item))
+      prevItems.map((item) =>
+        item._id === id ? { ...item, ...updates } : item
+      )
     );
   };
 
@@ -178,7 +175,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         orders,
         removeOrderFromListOrder,
         updateOrderStatusForMeal,
-        clearCart
+        clearCart,
       }}
     >
       {children}

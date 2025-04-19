@@ -1,8 +1,8 @@
-import { useParams } from "react-router-dom";
-import MainHeadingTitle from "./MainHeadingTitle";
 import { useEffect, useState } from "react";
-import { useRole } from "../context/RoleContext";
+import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useRole } from "../context/RoleContext";
+import MainHeadingTitle from "./MainHeadingTitle";
 
 type OrderItem = {
   id: string;
@@ -58,50 +58,56 @@ const OrderDetail = () => {
       });
   }, [id]);
 
-  const handleStatusChange = (mealId: string, mealName: string, newStatus: string) => {
+  const handleStatusChange = (
+    mealId: string,
+    mealName: string,
+    newStatus: string
+  ) => {
     if (!order) return;
 
-    fetch(`http://localhost:3001/api/orders/${order.id}/meals/${mealId}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status: newStatus }),
-    })
-    .then((res) => {
-      if (!res.ok){
-        console.error("Lỗi cập nhật từ API:", res.status);
-        throw new Error("Failed to update status");
+    fetch(
+      `http://localhost:3001/api/orders/${order.id}/meals/${mealId}/status`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
       }
-      return res.json();
-    })
-    .then((data) => {
-      console.log("Trạng thái cập nhật thành công:", data);
-      
-      Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: `Cập nhật trạng thái món "${mealName}" thành "${newStatus}" thành công.`,
-        timer: 3000,
-        showConfirmButton: false,
-      });
+    )
+      .then((res) => {
+        if (!res.ok) {
+          console.error("Lỗi cập nhật từ API:", res.status);
+          throw new Error("Failed to update status");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Trạng thái cập nhật thành công:", data);
 
-      setOrder((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          items: prev.items.map((item) =>
-            String(item.id) === String(mealId)
-              ? { ...item, status: newStatus }
-              : item
-          ),
-          
-        };
-      });      
-    })
-    .catch((err) => {
-      console.error("Lỗi khi cập nhật trạng thái món ăn:", err);
-    });
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: `Cập nhật trạng thái món "${mealName}" thành "${newStatus}" thành công.`,
+          timer: 3000,
+          showConfirmButton: false,
+        });
+
+        setOrder((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            items: prev.items.map((item) =>
+              String(item.id) === String(mealId)
+                ? { ...item, status: newStatus }
+                : item
+            ),
+          };
+        });
+      })
+      .catch((err) => {
+        console.error("Lỗi khi cập nhật trạng thái món ăn:", err);
+      });
   };
 
   const getStatusColor = (status: string) => {

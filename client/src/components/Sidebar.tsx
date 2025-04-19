@@ -1,16 +1,21 @@
-import { useRole } from "../context/RoleContext";
-import { Link } from "react-router-dom";
 import {
+  BackwardIcon,
   ShoppingCartIcon,
   StarIcon,
-  BackwardIcon,
 } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
-import logo from "../assets/logo.png";
 import { useParams } from "react-router";
+import logo from "../assets/logo.png";
+import { useStaffCustomer } from "../context/StaffCustomerContext";
 
 const Sidebar = () => {
   const { role } = useParams();
+  // const { role } = useRole();
+  const { currentRole } = useStaffCustomer();
+
+  console.log("role:", role);
+  console.log("currentRole:", currentRole);
 
   return (
     <div className="h-screen bg-orange-100 p-4">
@@ -20,19 +25,6 @@ const Sidebar = () => {
       </div>
 
       <div className="flex flex-col space-y-2 pt-4">
-        {role === "customer" && <></>}
-        {role === "chef" && <></>}
-        {role === "manager" && (
-          <>
-            <Link
-              to={`/${role}/dashboard/reviews`}
-              className="flex items-center p-2 rounded-lg hover:bg-orange-200"
-            >
-              <StarIcon className="h-6 w-6 text-orange-600" />
-              <span className="ml-2">Reviews</span>
-            </Link>
-          </>
-        )}
         {/* =======common======= */}
         <Link
           to={`/${role}/dashboard`}
@@ -64,13 +56,30 @@ const Sidebar = () => {
           <span className="ml-2">Orders</span>
         </Link>
 
-        <Link
-          to="/"
-          className="flex items-center p-2 gap-2 rounded-lg hover:bg-orange-200"
-        >
-          <BackwardIcon className="h-6 w-6 text-orange-600" />
-          <span className="ml-2">Go back</span>
-        </Link>
+        {role === "customer" && <></>}
+
+        {!(currentRole === "customer") && (
+          <Link
+            to="/"
+            className="flex items-center p-2 gap-2 rounded-lg hover:bg-orange-200"
+          >
+            <BackwardIcon className="h-6 w-6 text-orange-600" />
+            <span className="ml-2">Go back</span>
+          </Link>
+        )}
+
+        {role === "chef" && <></>}
+        {role === "manager" && (
+          <>
+            <Link
+              to={`/${role}/dashboard/reviews`}
+              className="flex items-center p-2 rounded-lg hover:bg-orange-200"
+            >
+              <StarIcon className="h-6 w-6 text-orange-600" />
+              <span className="ml-2">Reviews</span>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

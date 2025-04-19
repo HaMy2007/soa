@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import customer1 from "../assets/customers/customer-1.jpg";
 import customer2 from "../assets/customers/customer-2.jpg";
 import customer3 from "../assets/customers/customer-3.jpg";
@@ -7,7 +8,6 @@ import customer6 from "../assets/customers/customer-6.jpg";
 import hero from "../assets/hero.png";
 import Button from "../components/Button";
 import { useRole } from "../context/RoleContext";
-import { useNavigate } from "react-router";
 
 type Props = {};
 

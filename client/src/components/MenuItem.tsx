@@ -3,9 +3,9 @@ import {
   LockOpenIcon,
   ShoppingCartIcon,
 } from "@heroicons/react/24/outline";
+import { useParams } from "react-router";
 import { useCart } from "../context/CartContext";
 import { MenuItemType } from "../type";
-import { useParams } from "react-router";
 
 type MenuItemProps = MenuItemType & {
   handleLockToggle: (id: string, currentLock: boolean) => void;
@@ -23,7 +23,7 @@ const MenuItem = ({
 }: MenuItemProps) => {
   const { addToCart } = useCart();
   const { role } = useParams();
-  console.log("🔍 Món ăn:", name, "isLocked:", isLocked);
+  // console.log("🔍 Món ăn:", name, "isLocked:", isLocked);
   const handleAddToCart = () => {
     addToCart({
       _id,
