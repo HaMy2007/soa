@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MdDeleteForever, MdModeEditOutline } from "react-icons/md";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import Swal from "sweetalert2";
 import Button from "../components/Button";
 import MainHeadingTitle from "../components/MainHeadingTitle";
@@ -27,6 +27,7 @@ const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const { currentRole, getCurrentTableNumber } = useStaffCustomer();
+  const location = useLocation();
 
   const canManageOrders = role !== "customer";
   const isCustomerView = role === "customer" && currentRole === "customer";
@@ -104,8 +105,12 @@ const Orders = () => {
         const currentTableNumber = getCurrentTableNumber();
         if (currentTableNumber) {
           filteredOrders = mappedOrders.filter(
-            (order) => order.tableNumber === currentTableNumber
+            (order) =>
+              order.tableNumber === currentTableNumber &&
+              order.status !== "completed"
           );
+        } else {
+          filteredOrders = []; 
         }
       }
 
@@ -118,7 +123,10 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [role, currentRole, getCurrentTableNumber()]);
+    if (location.state?.refresh) {
+      navigate(location.pathname, { replace: true });
+    }
+  }, [role, currentRole, getCurrentTableNumber(), location.state?.refresh]);
 
   const updateOrderStatus = async (id: string, newStatus: string) => {
     try {
@@ -172,7 +180,7 @@ const Orders = () => {
             status: "completed",
             endTime: new Date(),
           }),
-        }
+        } 
       );
 
       const data = await response.json();
@@ -247,8 +255,12 @@ const Orders = () => {
         {renderFilterSection()}
 
         {orders.length === 0 ? (
-          <div className="flex items-center justify-center">
-            <p className="text-black">No orders placed yet.</p>
+          <div className="flex items-center justify-center text-center text-gray-600">
+            <p className="text-black">
+              {isCustomerView
+                ? "Bạn chưa có đơn hàng nào đang hoạt động cho bàn hiện tại."
+                : "Không có đơn hàng nào được tìm thấy."}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">

@@ -7,9 +7,6 @@ import { useStaffCustomer } from "../context/StaffCustomerContext";
 import { OrderType } from "../type";
 import OrderItem from "./OrderItem";
 
-const STAFF_SECRET = "ChangeTable";
-const ROLE_TOGGLE_SECRET = "SR";
-
 type TypeRole = "staff" | "customer";
 function OrderInMenuPage() {
   const navigate = useNavigate();
@@ -21,34 +18,20 @@ function OrderInMenuPage() {
     selectedTable,
     setSelectedTable,
     note,
-    clearCart,
   } = useCart();
 
   const {
     currentRole,
-    isTableOpened,
-    // selectedTable,
-    switchToCustomer,
-    switchToStaff,
-    clearTableData,
     setIsTableOpened,
     setCurrentRole,
   } = useStaffCustomer();
 
   const { role } = useParams();
-  // const [isTableOpened, setIsTableOpened] = useState(false);
   const [freeTables, setFreeTables] = useState<
     { _id: string; tableNumber: number; isOccupied?: boolean }[]
   >([]);
-  const [isOpenModal, setIsOpenModal] = useState(false);
-  const [tempTable, setTempTable] = useState<string | null>(null);
-  const [isResetConfirm, setIsResetConfirm] = useState(false);
-  const [staffSecret, setStaffSecret] = useState("");
   const [roleSecret, setRoleSecret] = useState("");
   const [isRoleSwitch, setIsRoleSwitch] = useState(false);
-  // const [currentRole, setCurrentRole] = useState<TypeRole>("staff");
-
-  // console.log("aaaa", currentRole);
 
   useEffect(() => {
     fetch("http://localhost:3002/api/tables/free")
@@ -67,7 +50,6 @@ function OrderInMenuPage() {
           }
         }
 
-        // Kiểm tra vai trò đã lưu trong localStorage
         const savedRole = localStorage.getItem("currentRole");
         if (savedRole === "customer") {
           setCurrentRole("customer");
@@ -124,23 +106,6 @@ function OrderInMenuPage() {
     </div>
   );
 
-  const handleOpenTable = () => {
-    if (!tempTable)
-      return Swal.fire("Chưa chọn bàn", "Vui lòng chọn bàn", "warning");
-    setSelectedTable(tempTable);
-    setIsOpenModal(false);
-    setIsTableOpened(true);
-    localStorage.setItem(
-      "openedTable",
-      JSON.stringify({
-        name: tempTable,
-        isOpened: true,
-      })
-    );
-
-    Swal.fire("Bàn đã được mở", "Bây giờ có thể order", "success");
-  };
-
   const handleAddToOrder = async () => {
     try {
       const tableNumber = parseInt(selectedTable.replace("Table ", ""));
@@ -186,7 +151,9 @@ function OrderInMenuPage() {
         if (!updateRes.ok) throw new Error("Cập nhật order thất bại");
         console.log("Đã thêm món vào order cũ");
         placeOrder(existingOrder.orderID, tableID);
-        navigate(`/${role}/dashboard/orders/${existingOrder.orderID}`);
+        navigate(`/${role}/dashboard/orders/${existingOrder.orderID}`,{
+          state: { refresh: true }
+        });
       } else {
         const orderData = {
           tableNumber,
@@ -214,29 +181,39 @@ function OrderInMenuPage() {
     }
   };
 
-  // Hàm xử lý chuyển đổi vai trò
-  const handleRoleSwitch = () => {
-    if (roleSecret === ROLE_TOGGLE_SECRET) {
-      const newRole = currentRole === "staff" ? "customer" : "staff";
-      setCurrentRole(newRole);
-      localStorage.setItem("currentRole", newRole);
-      setRoleSecret("");
-      setIsRoleSwitch(false);
-      Swal.fire(
-        "Đã chuyển vai trò",
-        `Bạn đang ở vai trò ${
-          newRole === "staff" ? "nhân viên phục vụ" : "khách hàng"
-        }`,
-        "success"
-      );
-    } else {
-      Swal.fire(
-        "Mã không hợp lệ",
-        "Vui lòng nhập đúng mã để chuyển vai trò",
-        "error"
-      );
+  const handleRoleSwitch = async () => {
+    try {
+      const res = await fetch("http://localhost:3003/api/shifts/now");
+      const data = await res.json();
+      const currentSecret = data.secretCode;
+  
+      if (roleSecret === currentSecret) {
+        const newRole = currentRole === "staff" ? "customer" : "staff";
+        setCurrentRole(newRole);
+        localStorage.setItem("currentRole", newRole);
+        if (newRole === "customer" && selectedTable) {
+          localStorage.setItem(
+            "openedTable",
+            JSON.stringify({ name: selectedTable, isOpened: true })
+          );
+        }
+        setRoleSecret("");
+        setIsRoleSwitch(false);
+        Swal.fire(
+          "Đã chuyển vai trò",
+          `Bạn đang ở vai trò ${
+            newRole === "staff" ? "nhân viên phục vụ" : "khách hàng"
+          }`,
+          "success"
+        );
+      } else {
+        Swal.fire("Mã không hợp lệ", "Mã không đúng với ca hiện tại", "error");
+      }
+    } catch (err) {
+      console.error("Lỗi khi kiểm tra secret code theo ca:", err);
+      Swal.fire("Lỗi", "Không thể xác minh mã hiện tại", "error");
     }
-  };
+  };  
 
   return (
     <div
@@ -246,13 +223,11 @@ function OrderInMenuPage() {
     >
       <div className="text-center mb-3">
         <span className="text-red-600 font-bold text-3xl ">Order</span>
-        {/* Hiển thị vai trò hiện tại */}
         <div className="text-sm text-gray-500 mt-1">
           {currentRole === "staff" ? "Nhân viên phục vụ" : "Khách hàng"}
         </div>
       </div>
 
-      {/* Phần chuyển đổi vai trò */}
       <div className="mb-3">
         {!isRoleSwitch ? (
           <button
@@ -289,116 +264,25 @@ function OrderInMenuPage() {
           </div>
         )}
       </div>
-
-      {/* Chỉ hiện setup bàn khi ở vai trò nhân viên và chưa mở bàn */}
-      {currentRole === "staff" && !isTableOpened && (
+      {currentRole === "staff" ? (
         <div className="mb-4">
-          <button
-            className=" bg-orange-600 text-white hover:bg-orange-700 px-4 py-2 rounded w-full"
-            onClick={() => setIsOpenModal(true)}
-          >
-            Set up a table 🔓
-          </button>
-        </div>
-      )}
-
-      {isOpenModal && currentRole === "staff" && (
-        <div className="bg-white border p-4 rounded shadow text-black">
-          <label className="block mb-2">Choose table</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">Select a table</label>
           <Select
             options={tableOptions}
-            onChange={(e) => {
-              setTempTable(e?.value || null);
-            }}
+            value={tableOptions.find((opt) => opt.value === selectedTable)}
+            onChange={(option) => setSelectedTable(option?.value || "")}
             styles={customStyles}
             formatOptionLabel={formatOptionLabel}
           />
-
-          <div className="flex justify-end gap-2 mt-4">
-            <button
-              onClick={() => setIsOpenModal(false)}
-              className="bg-gray-400 text-white px-4 py-1 rounded"
-            >
-              Cancle
-            </button>
-            <button
-              onClick={handleOpenTable}
-              className="bg-green-600 text-white px-4 py-1 rounded"
-            >
-              Confirm
-            </button>
-          </div>
         </div>
-      )}
-
-      {isTableOpened && (
+      ) : (
         <div className="mb-3">
           <div className="bg-gray-100 p-2 rounded text-black mb-2">
             {selectedTable}
           </div>
-          {/* Chỉ hiện nút đổi bàn khi ở vai trò nhân viên */}
-          {currentRole === "staff" && !isResetConfirm && (
-            <button
-              className="text-sm px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
-              onClick={() => setIsResetConfirm(true)}
-            >
-              Change table 🔄
-            </button>
-          )}
-          {currentRole === "staff" && isResetConfirm && (
-            <div className="mt-2">
-              <input
-                type="password"
-                placeholder="Enter secret code"
-                value={staffSecret}
-                onChange={(e) => setStaffSecret(e.target.value)}
-                className="p-1 border rounded w-full mb-2"
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setIsResetConfirm(false)}
-                  className="px-3 py-1 bg-gray-400 text-white rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    if (staffSecret === STAFF_SECRET) {
-                      setIsTableOpened(false);
-                      setSelectedTable("");
-                      setTempTable(null);
-                      setIsResetConfirm(false);
-                      setStaffSecret("");
-                      // Xóa bàn đã lưu
-                      localStorage.removeItem("openedTable");
-                      // Nếu đang ở vai trò khách, chuyển về vai trò nhân viên
-                      if (currentRole === ("customer" as TypeRole)) {
-                        setCurrentRole("staff");
-                        localStorage.setItem("currentRole", "staff");
-                      }
-                      Swal.fire(
-                        "Table reset",
-                        "You can set up another table now",
-                        "info"
-                      );
-                    } else {
-                      Swal.fire(
-                        "Invalid code",
-                        "Please enter the correct staff code",
-                        "error"
-                      );
-                    }
-                  }}
-                  className="px-3 py-1 bg-red-600 text-white rounded"
-                >
-                  Confirm Change
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       )}
-
+      
       <div>
         {cartItems.length === 0 ? (
           <div className="text-center mb-3">
@@ -416,8 +300,7 @@ function OrderInMenuPage() {
         </div>
       )}
 
-      {/* Chỉ hiện phần ghi chú khi là khách hàng hoặc đã ở vai trò khách hàng */}
-      {currentRole === "customer" && (
+      
         <div>
           <input
             className="mt-3 mb-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -425,7 +308,6 @@ function OrderInMenuPage() {
             onChange={(e) => setNote(e.target.value)}
           />
         </div>
-      )}
 
       <div className="flex items-center justify-center">
         <button
@@ -446,14 +328,3 @@ function OrderInMenuPage() {
 }
 
 export default OrderInMenuPage;
-
-function getShiftByTime(date: Date): string {
-  const totalMinutes = date.getHours() * 60 + date.getMinutes();
-
-  if (totalMinutes >= 410 && totalMinutes < 570) return "CA1"; // 6:50–9:30
-  if (totalMinutes >= 570 && totalMinutes < 765) return "CA2"; // 9:30–12:45
-  if (totalMinutes >= 765 && totalMinutes < 925) return "CA3"; // 12:45–15:25
-  if (totalMinutes >= 925 && totalMinutes < 1075) return "CA4"; // 15:25–17:55
-  if (totalMinutes >= 1075 && totalMinutes < 1320) return "CA5"; // 17:55–22:00
-  return "Overtime";
-}
