@@ -2,13 +2,11 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 
 const mongoURI = process.env.MONGO_URL;
-console.log("MONGO_URLAAA:", mongoURI);
 
 if (!mongoURI) {
   console.error("LỖI: MONGO_URL không được định nghĩa trong file .env!");
   process.exit(1);
 }
-console.log("🔗 Connecting to:", mongoURI);
 mongoose
   .connect(mongoURI, {
     // useNewUrlParser: true,

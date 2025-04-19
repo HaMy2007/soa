@@ -3,8 +3,6 @@ const mongoose = require("mongoose");
 
 const mongoURI = process.env.MONGO_URL;
 
-console.log(process.env.a);
-
 if (!mongoURI) {
   console.error("LỖI: MONGO_URL không được định nghĩa trong file .env!");
   process.exit(1);
