@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import login from "../assets/login.png";
 import logo from "../assets/logo.png";
+import registerImage from "../assets/register2.jpg"; // Hình ảnh cho trang đăng ký
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    name: "", // Thêm trường name
+    email: "",
     username: "",
     password: "",
   });
   const [error, setError] = useState("");
-  const [isShowPassword, setIsShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -24,37 +24,65 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
-    if (!formData.username || !formData.password) {
+    // Kiểm tra xem các trường có để trống không
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.username ||
+      !formData.password
+    ) {
       setError("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
-    if (formData.username === "manager" && formData.password === "Ngan12345") {
-      const user = { role: "manager" };
-      localStorage.setItem("user", JSON.stringify(user));
-      navigate("/manager/dashboard");
-    } else {
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-    }
+    // Giả lập đăng ký thành công cho vai trò manager
+    alert("Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
+    navigate("/login"); // Chuyển hướng đến trang đăng nhập
   };
 
   return (
     <div className="w-full h-screen flex items-center justify-center bg-title-section-menu">
       <div className="w-4/5 h-4/5 bg-white rounded-md shadow-2xl shadow-blue flex">
-        <div className="flex-1 flex flex-col items-center justify-center gap-4">
-          <h1 className="text-black font-bold text-5xl">Đăng nhập</h1>
-          <h2 className="text-black">Đảm bảo tài khoản của bạn được an toàn</h2>
-          <img className="w-4/5" src={login} alt="ảnh login" />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 mt-8">
+          <h1 className="text-black font-bold text-5xl">Đăng ký</h1>
+          <h2 className="text-black">Tạo tài khoản mới của bạn</h2>
+          <img
+            className="w-full overflow-hidden"
+            src={registerImage}
+            alt="ảnh đăng ký"
+          />
         </div>
 
         <div className="flex-1 flex flex-col gap-4 items-center justify-center">
           <div className="flex flex-col gap-2">
             <img src={logo} className="w-14 h-14" />
-            <span className="font-bold">Best Meals</span>
+            <span className="font-bold">BEST MEALS</span>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-2 w-3/5">
             <div className="w-full flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="text-black font-semibold">Tên</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Nhập tên của bạn"
+                  className="rounded-md p-2 w-full border border-gray-300"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-black font-semibold">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Nhập email của bạn"
+                  className="rounded-md p-2 w-full border border-gray-300"
+                />
+              </div>
               <div className="flex flex-col gap-1">
                 <label className="text-black font-semibold">
                   Tên đăng nhập
@@ -68,53 +96,26 @@ const Login = () => {
                   className="rounded-md p-2 w-full border border-gray-300"
                 />
               </div>
-              <div className="flex flex-col gap-1 relative">
+              <div className="flex flex-col gap-1">
                 <label className="text-black font-semibold">Mật khẩu</label>
                 <input
-                  type={isShowPassword ? "text" : "password"}
+                  type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Nhập mật khẩu"
-                  className="border border-gray-300 rounded-md p-2 w-full pr-10"
+                  className="rounded-md p-2 w-full border border-gray-300"
                 />
-
-                <div
-                  className="absolute right-3 top-10 cursor-pointer text-gray-500"
-                  onClick={() => setIsShowPassword((prev) => !prev)}
-                >
-                  {isShowPassword ? <FaEyeSlash /> : <FaEye />}
-                </div>
               </div>
             </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => navigate("/resetPassword")}
-                className="flex justify-between items-start flex-col gap-4 mb-4"
-              >
-                <span className="text-black cursor-pointer">
-                  Quên mật khẩu?
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate("/register")}
-                className="flex justify-between items-start flex-col gap-4 mb-4"
-              >
-                <span className="text-black cursor-pointer">Đăng ký</span>
-              </button>
-            </div>
-
             <button
               type="submit"
               className="bg-menu-title hover:bg-red-300 cursor-pointer text-black rounded-md p-2 w-full"
             >
-              ĐĂNG NHẬP
+              ĐĂNG KÝ
             </button>
           </form>
         </div>
@@ -123,4 +124,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

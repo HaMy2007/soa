@@ -1,15 +1,14 @@
 import {
   BackwardIcon,
+  KeyIcon,
   ShoppingCartIcon,
   StarIcon,
-  KeyIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 
 import { useParams } from "react-router";
 import logo from "../assets/logo.png";
 import { useStaffCustomer } from "../context/StaffCustomerContext";
-import Button from "./Button";
 
 const Sidebar = () => {
   const { role } = useParams();
@@ -87,6 +86,7 @@ const Sidebar = () => {
               <KeyIcon className="h-6 w-6 text-orange-600" />
               <span className="ml-2">Secret Codes</span>
             </Link>
+
             {/* <Button onClick={() => {}}>Generate secret code</Button> */}
           </>
         )}
