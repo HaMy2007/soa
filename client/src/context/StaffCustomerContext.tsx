@@ -53,10 +53,15 @@ export const StaffCustomerProvider = ({
   }, []);
 
   const getCurrentTableNumber = () => {
-    if (!selectedTable) return null;
-    const match = selectedTable.match(/\d+/);
-    return match ? parseInt(match[0]) : null;
-  };
+    const opened = localStorage.getItem("openedTable");
+    if (!opened) return null;
+  
+    const parsed = JSON.parse(opened);
+    if (parsed.isOpened && parsed.name.startsWith("Table ")) {
+      return parseInt(parsed.name.replace("Table ", ""));
+    }
+    return null;
+  };  
 
   const switchToCustomer = (table: string) => {
     setCurrentRole("customer");

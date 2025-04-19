@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MdDeleteForever, MdModeEditOutline } from "react-icons/md";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import Swal from "sweetalert2";
 import Button from "../components/Button";
 import MainHeadingTitle from "../components/MainHeadingTitle";
@@ -27,6 +27,7 @@ const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const { currentRole, getCurrentTableNumber } = useStaffCustomer();
+  const location = useLocation();
 
   const canManageOrders = role !== "customer";
   const isCustomerView = role === "customer" && currentRole === "customer";
@@ -104,8 +105,12 @@ const Orders = () => {
         const currentTableNumber = getCurrentTableNumber();
         if (currentTableNumber) {
           filteredOrders = mappedOrders.filter(
-            (order) => order.tableNumber === currentTableNumber
+            (order) =>
+              order.tableNumber === currentTableNumber &&
+              order.status !== "completed"
           );
+        } else {
+          filteredOrders = []; 
         }
       }
 
@@ -118,7 +123,10 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [role, currentRole, getCurrentTableNumber()]);
+    if (location.state?.refresh) {
+      navigate(location.pathname, { replace: true });
+    }
+  }, [role, currentRole, getCurrentTableNumber(), location.state?.refresh]);
 
   const updateOrderStatus = async (id: string, newStatus: string) => {
     try {
@@ -172,7 +180,7 @@ const Orders = () => {
             status: "completed",
             endTime: new Date(),
           }),
-        }
+        } 
       );
 
       const data = await response.json();
@@ -247,8 +255,12 @@ const Orders = () => {
         {renderFilterSection()}
 
         {orders.length === 0 ? (
-          <div className="flex items-center justify-center">
-            <p className="text-black">No orders placed yet.</p>
+          <div className="flex items-center justify-center text-center text-gray-600">
+            <p className="text-black">
+              {isCustomerView
+                ? "Bạn chưa có đơn hàng nào đang hoạt động cho bàn hiện tại."
+                : "Không có đơn hàng nào được tìm thấy."}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
@@ -271,18 +283,25 @@ const Orders = () => {
                   <p className="text-sm text-gray-600">Status: {item.status}</p>
                 </div>
 
-                {canManageOrders && (
+                
                   <div className="flex flex-col gap-3 w-full items-end">
+                    {item.status === "confirmed" && (
                     <div className="flex gap-2">
-                      {item.status === "confirmed" && (
+                      {isCustomerView ? (
+                        <button
+                          className="rounded text-white bg-blue-600 hover:bg-blue-700 p-2 transition duration-200"
+                          onClick={(e) => handleEdit(item.id, e)}
+                        >
+                          <MdModeEditOutline />
+                        </button>
+                      ) : (
                         <>
                           <button
                             className="rounded text-white bg-red-600 hover:bg-red-700 p-2 transition duration-200"
                             onClick={async (e) => {
                               e.stopPropagation();
                               const result = await Swal.fire({
-                                title:
-                                  "Bạn có chắc muốn xóa hoá đơn này không?",
+                                title: "Bạn có chắc muốn xóa hoá đơn này không?",
                                 text: "Hành động này không thể hoàn tác!",
                                 icon: "warning",
                                 showCancelButton: true,
@@ -304,6 +323,7 @@ const Orders = () => {
                           >
                             <MdDeleteForever />
                           </button>
+
                           <button
                             className="rounded text-white bg-blue-600 hover:bg-blue-700 p-2 transition duration-200"
                             onClick={(e) => handleEdit(item.id, e)}
@@ -313,6 +333,9 @@ const Orders = () => {
                         </>
                       )}
                     </div>
+                  )}
+
+                  {canManageOrders && (
 
                     <select
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/5 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -326,7 +349,7 @@ const Orders = () => {
                       <option value="processing">Processing</option>
                       <option value="completed">Completed</option>
                     </select>
-
+                  )}
                     {role === "manager" && item.status !== "completed" && (
                       <Button
                         className="text-sm px-3 py-2 font-thin"
@@ -339,7 +362,6 @@ const Orders = () => {
                       </Button>
                     )}
                   </div>
-                )}
               </div>
             ))}
           </div>
