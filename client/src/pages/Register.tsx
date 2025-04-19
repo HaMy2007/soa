@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import registerImage from "../assets/register2.jpg"; // Hình ảnh cho trang đăng ký
+import registerImage from "../assets/register2.jpg";
+import axios from "axios";
+import Swal from 'sweetalert2';
 
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "", // Thêm trường name
+    name: "", 
     email: "",
     username: "",
     password: "",
@@ -20,24 +22,47 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    // Kiểm tra xem các trường có để trống không
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.username ||
-      !formData.password
-    ) {
+  
+    if (!formData.name || !formData.email || !formData.username || !formData.password) {
       setError("Vui lòng điền đầy đủ thông tin.");
       return;
     }
-
-    // Giả lập đăng ký thành công cho vai trò manager
-    alert("Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
-    navigate("/login"); // Chuyển hướng đến trang đăng nhập
+  
+    try {
+      const res = await axios.post("http://localhost:3003/api/users/register", formData);
+  
+      await Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: 'Đăng ký thành công. Bạn có thể đăng nhập ngay bây giờ.',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Đăng nhập'
+      });
+      navigate("/login");
+    } catch (err: any) {
+      if (err.response && err.response.data && err.response.data.error) {
+        setError(err.response.data.error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi!',
+          text: err.response.data.error,
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'OK'
+        });
+      } else {
+        setError("Đã xảy ra lỗi khi đăng ký.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi không xác định!',
+          text: 'Đã xảy ra lỗi khi đăng ký.',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'OK'
+        });
+      }
+    }
   };
 
   return (

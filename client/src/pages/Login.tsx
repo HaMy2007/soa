@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import login from "../assets/login.png";
 import logo from "../assets/logo.png";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,21 +21,22 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!formData.username || !formData.password) {
-      setError("Vui lòng điền đầy đủ thông tin.");
-      return;
-    }
-
-    if (formData.username === "manager" && formData.password === "Ngan12345") {
-      const user = { role: "manager" };
-      localStorage.setItem("user", JSON.stringify(user));
+    try {
+      const res = await axios.post("http://localhost:3003/api/users/login", formData);
+      
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
       navigate("/manager/dashboard");
-    } else {
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+    } catch (err: any) {
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Đăng nhập thất bại.");
+      }
     }
   };
 
